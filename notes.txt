@@ -1,0 +1,61 @@
+#get the ip address that boot2docker thinks is the localhost
+docker-machine ip default
+
+#make the image (app_i)
+docker build -t app_i .
+
+#make the container from the image
+docker run --name rmq_c -itd -P rabbitmq:latest
+docker run --name app_c --rm -it --link rmq_c:rmq -v /Users/dgabrieli/code/qTest:/qTest app_i bash
+
+#start celery
+celery multi start worker -A mytasks
+#or
+celery multi start worker1 -A proj --pidfile="./%n.pid" --logfile="./%n.log"
+
+#kill celery daemon workers
+ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill -9
+
+
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+
+
+#from inside the pyapp container
+$ ipython3
+> import os
+> list(os.environ.keys())
+
+In [4]: zip(os.environ.keys(), os.environ.values())
+Out[4]: 
+[('RMQ_PORT_5671_TCP_ADDR', '172.17.0.2'),
+ ('RMQ_NAME', '/app_c/rmq'),
+ ('RMQ_ENV_RABBITMQ_LOGS', '-'),
+ ('RMQ_PORT_5671_TCP_PROTO', 'tcp'),
+ ('RMQ_PORT', 'tcp://172.17.0.2:4369'),
+ ('RMQ_PORT_25672_TCP_PROTO', 'tcp'),
+ ('PATH', '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'),
+ ('HOME', '/root'),
+ ('RMQ_PORT_5671_TCP', 'tcp://172.17.0.2:5671'),
+ ('LANG', 'C.UTF-8'),
+ ('TERM', 'xterm'),
+ ('RMQ_ENV_RABBITMQ_SASL_LOGS', '-'),
+ ('PYTHON_VERSION', '3.5.1'),
+ ('SHLVL', '1'),
+ ('RMQ_PORT_5672_TCP_PORT', '5672'),
+ ('PYTHON_PIP_VERSION', '7.1.2'),
+ ('RMQ_PORT_5672_TCP_ADDR', '172.17.0.2'),
+ ('RMQ_PORT_25672_TCP_ADDR', '172.17.0.2'),
+ ('RMQ_PORT_25672_TCP', 'tcp://172.17.0.2:25672'),
+ ('RMQ_PORT_4369_TCP_PROTO', 'tcp'),
+ ('RMQ_PORT_5672_TCP', 'tcp://172.17.0.2:5672'),
+ ('RMQ_ENV_RABBITMQ_VERSION', '3.5.7-1'),
+ ('_', '/usr/bin/ipython'),
+ ('RMQ_PORT_4369_TCP_ADDR', '172.17.0.2'),
+ ('RMQ_PORT_4369_TCP_PORT', '4369'),
+ ('HOSTNAME', 'dbe67d6c7610'),
+ ('RMQ_PORT_4369_TCP', 'tcp://172.17.0.2:4369'),
+ ('RMQ_PORT_5672_TCP_PROTO', 'tcp'),
+ ('PWD', '/usr/src/app'),
+ ('RMQ_PORT_5671_TCP_PORT', '5671'),
+ ('RMQ_PORT_25672_TCP_PORT', '25672')]

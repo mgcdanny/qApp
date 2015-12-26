@@ -1,0 +1,8 @@
+rmq:
+  image: rabbitmq:latest
+  container_name: rmq
+app:
+  container_name: app
+  build: app/
+  links:
+    - rmq
