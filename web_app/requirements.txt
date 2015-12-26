@@ -1,0 +1,5 @@
+pika
+ipython
+celery
+rpy2
+Flask
