@@ -1,4 +1,0 @@
-pika
-ipython
-celery
-rpy2

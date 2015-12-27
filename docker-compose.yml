@@ -1,8 +1,16 @@
 rmq:
   image: rabbitmq:latest
   container_name: rmq
+
 app:
+  build: web_app/
   container_name: app
-  build: app/
   links:
     - rmq
+  ports:
+    - "8080:8080"
+  volumes:
+    - /media/sf_qApp:/qApp
+
+#volumes is to mount from host:container
+#makes it easier to change app code suff without rebuilding image

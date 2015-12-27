@@ -5,6 +5,7 @@ docker-machine ip default
 docker build -t app_i .
 
 #make the container from the image
+#remember that the celery contianer needs to be lined to the rabbitmq container
 docker run --name rmq_c -itd -P rabbitmq:latest
 docker run --name app_c --rm -it --link rmq_c:rmq -v /Users/dgabrieli/code/qTest:/qTest app_i bash
 
@@ -12,9 +13,18 @@ docker run --name app_c --rm -it --link rmq_c:rmq -v /Users/dgabrieli/code/qTest
 celery multi start worker -A mytasks
 #or
 celery multi start worker1 -A proj --pidfile="./%n.pid" --logfile="./%n.log"
+#start celery from Flask
+# celery -A app.celery worker
+# celery from flask seems to want to be pointed to the location of the celery object
+
 
 #kill celery daemon workers
 ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill -9
+
+
+# supervisor logging level to debug to get Flask http requests:
+# this will follow and print to screen all the std out from supervisor daemons (ie Flask http requests):
+# tail -f supervisord.log  
 
 
 docker stop $(docker ps -a -q)
