@@ -6,16 +6,17 @@ docker build -t app_i .
 
 #make the container from the image
 #remember that the celery contianer needs to be lined to the rabbitmq container
-docker run --name rmq_c -itd -P rabbitmq:latest
-docker run --name app_c --rm -it --link rmq_c:rmq -v /Users/dgabrieli/code/qTest:/qTest app_i bash
+#run the rmq container
+...
 
-#start celery
-celery multi start worker -A mytasks
-#or
-celery multi start worker1 -A proj --pidfile="./%n.pid" --logfile="./%n.log"
-#start celery from Flask
+#start celery as daemon (do this before starting the web app)
+# celery multi start worker1 -A app.celery worker --pidfile="./%n.pid" --logfile="./%n.log"
+#fyi: start celery from Flask in the foreground
 # celery -A app.celery worker
 # celery from flask seems to want to be pointed to the location of the celery object
+
+# start the web app
+docker run --name app --rm -it  --link rmq -p 8080:8080 --volume ~/code/qApp:/qApp qapp_app bash
 
 
 #kill celery daemon workers
@@ -29,6 +30,15 @@ ps auxww | grep 'celery worker' | awk '{print $2}' | xargs kill -9
 
 docker stop $(docker ps -a -q)
 docker rm $(docker ps -a -q)
+
+# test API endpoint performance
+sudo apt-get install apache2-utils
+ab -n <num_requests> -c <concurrency> <addr>:<port><path>
+ab -n 10 -c 1 0.0.0.0:8080/sync/ > ab_sync.txt
+ab -n 10 -c 1 0.0.0.0:8080/async/ > ab_async.txt
+
+
+#curl 
 
 
 #from inside the pyapp container

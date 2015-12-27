@@ -10,7 +10,7 @@ app:
   ports:
     - "8080:8080"
   volumes:
-    - /media/sf_qApp:/qApp
+    - .:/usr/src/qApp
 
 #volumes is to mount from host:container
 #makes it easier to change app code suff without rebuilding image

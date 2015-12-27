@@ -3,6 +3,7 @@ MAINTAINER Daniel Gabrieli
 
 RUN apt-get update
 
+#install the ssh daemon, but likely unnecessary
 RUN apt-get install -y openssh-server
 RUN mkdir /var/run/sshd
 RUN chmod 0755 /var/run/sshd

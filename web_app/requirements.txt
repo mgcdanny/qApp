@@ -3,3 +3,4 @@ ipython
 celery
 rpy2
 Flask
+Flask-SQLAlchemy

@@ -1,6 +1,7 @@
 FROM python:latest
 MAINTAINER Daniel Gabrieli
 
+# Install R
 RUN echo "deb http://cran.us.r-project.org/bin/linux/debian jessie-cran3/" >> /etc/apt/sources.list
 
 RUN apt-key adv --keyserver keys.gnupg.net --recv-key 381BA480
@@ -12,7 +13,11 @@ RUN apt-get install -y r-base
 #too slow for now
 #RUN R -e "install.packages(c('data.table', 'digest', 'dplyr', 'gbm', 'hash', 'Imap', #'jsonlite', 'lubridate', 'magrittr', 'nnet', 'plyr', 'randomForest', 'rjson', 'RJSONIO', #'RUnit', 'stringr', 'survival', 'testthat', 'tidyr', 'zipcode', 'zoo', 'caret', #'Rserve'), repos='http://cran.us.r-project.org')"
 
+# Install VIM
 RUN apt-get install -y vim
+
+# Install sqlite3
+RUN apt-get install sqlite3 libsqlite3-dev
 
 RUN mkdir -p /usr/src/web_app
 WORKDIR /usr/src/web_app
